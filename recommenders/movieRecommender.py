@@ -27,6 +27,7 @@ with open('u.user', 'r') as users:
 for movie in movieData:
 	genreDictionary[int(movie[0])] = movie[5:-1]
 
+
 def averageRating(user):
 	averageRating = 0.0
 	cummulativeRatings = 0.0
@@ -108,8 +109,9 @@ def ratingPrediction(user, item):
 		denominator = denominator + weight
 
 	return userAverage + numerator / denominator
-print(userList[0])
 
+print("236 and 512")
+print(buildRatingDictionary(236, 512))	
 
 """
 print(buildRatingDictionary(312, 225))
