@@ -5,7 +5,7 @@ import math
 movieData = []
 ratingData = []
 userList = []
-genreDictionary = {}
+ratingDictionary = {}
 vectorList = []
 
 
@@ -24,21 +24,18 @@ with open('u.user', 'r') as users:
 	for row in userReader:
 		userList.append(row)
 
-for movie in movieData:
-	genreDictionary[int(movie[0])] = movie[5:-1]
+#sort rating data so it can iterate easily
+#ratingData.sort(key=lambda x: (int(x[0]), int(x[1])))
 
+#create an empty dictionary do dump ratings into. Key is user, value is list of ratings
+for i in range(1, len(userList) + 1):
+	ratingDictionary[i] = []
+	for j in range(0, 1682):
+		ratingDictionary[i].append('')
 
-for user in userList:
-	userRatings = []
-	userRatings.append(user[0])
-	for movie in movieData:
-		for rating in ratingData:
-			thisRating = ''
-			if int(movie[0]) == int(rating[0]) and int(user[0]) == int(rating[1]):
-				thisRating = rating[2]
-				break
-		userRatings.append(thisRating)
-	vectorList.append(userRatings)
-	print(vectorList)
+#iterate through rating data and insert rating into list in correct position
+for rating in ratingData:
+	ratingDictionary[int(rating[0])][int(rating[1])-1] = int(rating[2])
 
-print(vectorList[0])
+print(ratingDictionary)
+
