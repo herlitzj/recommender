@@ -1,6 +1,7 @@
 import csv
 import statistics
 import math
+import time
 
 movieData = []
 ratingData = []
@@ -24,18 +25,83 @@ with open('u.user', 'r') as users:
 	for row in userReader:
 		userList.append(row)
 
-#sort rating data so it can iterate easily
-#ratingData.sort(key=lambda x: (int(x[0]), int(x[1])))
-
 #create an empty dictionary do dump ratings into. Key is user, value is list of ratings
 for i in range(1, len(userList) + 1):
 	ratingDictionary[i] = []
-	for j in range(0, 1682):
+	for movie in movieData:
 		ratingDictionary[i].append('')
 
 #iterate through rating data and insert rating into list in correct position
 for rating in ratingData:
 	ratingDictionary[int(rating[0])][int(rating[1])-1] = int(rating[2])
 
-print(ratingDictionary)
+
+def averageRating(vectorToAverage):
+	counter = 0
+	total = 0
+	for rating in vectorToAverage:
+		if rating != '':
+			total = total + rating
+			counter = counter + 1
+	return total/counter
+
+def normalizeVector(vectorToNormalize):
+	normVector = vectorToNormalize
+	average = averageRating(normVector)
+	for i in range(0, len(normVector)):
+		if normVector[i] == '':
+			normVector[i] = 0
+		else:
+			normVector[i] = normVector[i] - average
+	return normVector
+
+def vectorEuclideanDistance(vectorForDistance):
+	euclideanDistance = 0
+	for rating in vectorForDistance:
+		euclideanDistance = euclideanDistance + float(rating)*float(rating)
+	return math.sqrt(euclideanDistance)
+
+def cosineSimilarity(user1, user2):
+	user1Vec = ratingDictionary[user1][0:]
+	user2Vec = ratingDictionary[user2][0:]
+	user1NormedVector = normalizeVector(user1Vec)
+	user2NormedVector = normalizeVector(user2Vec)
+	user1EuclideanDist = vectorEuclideanDistance(user1NormedVector)
+	user2EuclideanDist = vectorEuclideanDistance(user2NormedVector)
+	cosineSim = 0
+	for i in range(0, len(user1NormedVector)):
+		cosineSim = cosineSim + user1NormedVector[i] * user2NormedVector[i]
+	return cosineSim / (user1EuclideanDist * user2EuclideanDist)
+
+def findNeighbors(inputUser):
+	targetUser = inputUser
+	neighbors = []
+	for user in userList:
+		if int(user[0]) != targetUser:
+			neighbors.append([int(user[0]), cosineSimilarity(targetUser, int(user[0])), averageRating(ratingDictionary[int(user[0])][0:])])
+	return sorted(neighbors, key=lambda x: x[1], reverse=True)[0:50]
+
+
+def prediction(user, movie):
+	userAverageRating = averageRating(ratingDictionary[int(user)][0:])
+	neighborhood = findNeighbors(user)
+	sumOfRatings = 0.0
+	sumOfWeights = 0.0
+	for neighbor in neighborhood:
+		neighborRatings = ratingDictionary[neighbor[0]][0:]
+		if neighborRatings[movie - 1] != '':
+			sumOfRatings = sumOfRatings + (neighborRatings[movie - 1] - neighbor[1]) * neighbor[2]
+			sumOfWeights = sumOfWeights + neighbor[2]
+	return sumOfRatings / sumOfWeights + userAverageRating
+	
+for i in range(10, 30):
+	print("Rating for user #20 for movie #", i, ratingDictionary[20][i])
+	print("Prediction: ", prediction(20, i))
+
+
+
+
+
+
+
 
