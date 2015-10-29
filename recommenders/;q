@@ -98,35 +98,23 @@ def prediction(user, movie):
 		return sumOfRatings / sumOfWeights + userAverageRating
 
 
-def newUserVector():
+def newUser():
 	newUserVector = []
 	print("Please rate the following movies. If you have not seen the movie, just press enter to give it no rating. To end the rating input, enter -1")
 	for movie in movieData:
 		print("How would you rate: ")
 		newRating = input(movie[1])
-		if newRating == '-1':
+		if newRating == -1:
 			break
 		else:
-			if newRating == '':
-				newUserVector.append(newRating)
-			else:
-				newUserVector.append(int(newRating))
-	if len(newUserVector) < len(movieData):
-		for i in range(0, len(movieData) - len(newUserVector)):
-			newUserVector.append('')
-	ratingDictionary[944] = newUserVector
+			newUserVector.append(newRating)
+	print(newUserVector)
 
 
-def topFive(user):
-	topMovies = []
-	movies = movieData[100:120]
-	for movie in movies:
-		topMovies.append([movie[0], movie[1], prediction(user, int(movie[0]))])
-	return sorted(topMovies, key=lambda x: x[2], reverse=True)[0:5]
+newUser()
 
 
-newUserVector()
-print(topFive(944))
+
 
 
 
