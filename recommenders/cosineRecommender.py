@@ -2,6 +2,7 @@ import csv
 import statistics
 import math
 import time
+import os
 
 movieData = []
 ratingData = []
@@ -119,14 +120,22 @@ def newUserVector():
 
 def topFive(user):
 	topMovies = []
-	movies = movieData[100:120]
+	movies = movieData[170:200]
 	for movie in movies:
 		topMovies.append([movie[0], movie[1], prediction(user, int(movie[0]))])
 	return sorted(topMovies, key=lambda x: x[2], reverse=True)[0:5]
 
-
+os.system('clear')
 newUserVector()
-print(topFive(944))
+print("Determining recommendations...")
+topFiveMovies = topFive(944)
+print()
+print("Top Five Recommended Movies:")
+for movie in topFiveMovies:
+	print("Title: ", movie[1])
+	print("Predicted Rating: ", math.ceil(movie[2]*100) / 100)
+
+
 
 
 
