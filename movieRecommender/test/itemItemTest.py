@@ -1,4 +1,4 @@
-from app.itemItemRecommender import returnMovieData, returnRatingDictionary, returnUserList, returnRatingData, averageRating
+from app.itemItemRecommender import returnMovieData, returnRatingDictionary, returnUserList, returnRatingData, averageRating, ratingDataFrame
 
 #Setup
 ratingDictionary = returnRatingDictionary()
@@ -48,4 +48,6 @@ def test_that_averageRating_returns_a_float():
 	testVector = ratingDictionary[10][0:]
 	assert isinstance(averageRating(testVector), float)
 
-
+def test_that_rating_DataFrame_has_correct_dimensions():
+	dimensions = ratingDataFrame().shape
+	assert dimensions == (1682, 943)

@@ -1,4 +1,8 @@
 import csv
+import numpy as np
+import pandas as pd
+import scipy as sp
+
 
 movieData = []
 ratingDictionary = {}
@@ -9,12 +13,12 @@ ratingData = []
 with open('../movieData.csv', 'r') as movies:
 	filereader = csv.reader(movies, delimiter='|')
 	for row in filereader:
-		movieData.append(row)
+		movieData.append(row[1])
 
 with open('../u.user', 'r') as users:
 	filereader = csv.reader(users, delimiter='|')
 	for row in filereader:
-		userList.append(row)
+		userList.append(row[0])
 
 with open('../u.data', 'r') as ratings:
 	filereader = csv.reader(ratings, delimiter='	')
@@ -50,7 +54,9 @@ def averageRating(itemVector):
 			counter = counter + 1
 	return total/counter
 
-
+def ratingDataFrame():
+	ratingDataFrame = pd.DataFrame(ratingDictionary.values(), index=movieData, columns=userList)
+	return ratingDataFrame
 
 
 
