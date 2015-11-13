@@ -1,62 +1,35 @@
-import csv
-import numpy as np
-import pandas as pd
-import scipy as sp
+import itemItemDataHandler as IIDH
+
+def predict_rating(user_id, movie_id):
+	prediction = 0.0
+	return prediction
+
+def choose_neighbors(target):
+        neighborhood = []
+        for i in range(len(IIDH.distance_matrix)):
+                if i != target:
+                        neighborhood.append([IIDH.distance_matrix[i][target], [i]])
+        return neighborhood
 
 
-movieData = []
-ratingDictionary = {}
-userList = []
-ratingData = []
+class User(object):
 
+	def __init__(self):
+		user_input = raw_input("Are you a returning user?")
+		if user_input == "yes" or user_input == "y":
+			self.ID = int(raw_input("Please enter your user ID"))
+			self.age = int(IIDH.database_query("SELECT age FROM users where id = {0}".format(self.ID))[0][0])
+		self.name = "no name"
 
-with open('../movieData.csv', 'r') as movies:
-	filereader = csv.reader(movies, delimiter='|')
-	for row in filereader:
-		movieData.append(row[1])
+	def return_id(self):
+		return self.ID
 
-with open('../u.user', 'r') as users:
-	filereader = csv.reader(users, delimiter='|')
-	for row in filereader:
-		userList.append(row[0])
+	def return_age(self):
+		return self.age
 
-with open('../u.data', 'r') as ratings:
-	filereader = csv.reader(ratings, delimiter='	')
-	for row in filereader:
-		ratingData.append(row)
+	def return_name(self):
+		return self.name
 
-for i in range(1, len(movieData) +1):
-	ratingDictionary[i] = []
-	for user in userList:
-		ratingDictionary[i].append(0)
-
-for rating in ratingData:
-	ratingDictionary[int(rating[1])][int(rating[0])-1] = int(rating[2])
-
-def returnMovieData():
-	return movieData
-
-def returnRatingDictionary():
-	return ratingDictionary
-
-def returnUserList():
-	return userList
-
-def returnRatingData():
-	return ratingData
-
-def averageRating(itemVector):
-	counter = 0
-	total = 0.0
-	for rating in itemVector:
-		if rating != '':
-			total = total + rating
-			counter = counter + 1
-	return total/counter
-
-def ratingDataFrame():
-	ratingDataFrame = pd.DataFrame(ratingDictionary.values(), index=movieData, columns=userList)
-	return ratingDataFrame
-
-
-
+	def predict_rating(self, movie_id):
+		prediction = 0.0
+		return prediction

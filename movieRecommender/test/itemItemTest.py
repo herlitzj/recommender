@@ -1,53 +1,35 @@
-from app.itemItemRecommender import returnMovieData, returnRatingDictionary, returnUserList, returnRatingData, averageRating, ratingDataFrame
+import app.itemItemRecommender as rec
+import app.itemItemDataHandler as IIDH
+import numpy as np
 
-#Setup
-ratingDictionary = returnRatingDictionary()
+def test_that_database_query_returns_proper_values():
+	return_value = IIDH.database_query("SELECT movie FROM ratings LIMIT 1")[0][0]
+	assert return_value == 242
 
+def test_that_get_item_vector_returns_the_correct_vector():
+	test_vector = IIDH.get_item_vector(10)
+	assert isinstance(test_vector, list)
+	assert len(test_vector) == 943
+	assert test_vector[0] == 3
 
-def test_that_movieData_is_list():
-	result = returnMovieData()
-	assert isinstance(result, list)
+def test_that_get_movie_count_returns_proper_movie_count():
+	movie_count = IIDH.get_movie_count()
+	assert isinstance(movie_count, int)
+	assert movie_count == 1682
 
-def test_that_movieData_is_a_list_of_lists():
-	result = returnMovieData()[0]
-	assert isinstance(result, list)
+def test_that_movie_matrix_returns_proper_matrix():
+	matrix = IIDH.movie_matrix()
+	assert np.shape(matrix) == (1682, 943)
+	assert matrix[10][0] == 2
 
-def test_that_movieData_has_24_columns():
-	result = len(returnMovieData()[0])
-	assert result == 24
+def test_that_cosine_distance_matrix_is_correct_matrix():
+	matrix = IIDH.distance_matrix
+	assert np.shape(matrix) == (1682, 1682)
 
-def test_that_ratingDictionary_is_a_dictionary():
-	result = returnRatingDictionary()
-	assert isinstance(result, dict)
+def test_that_neighborhood_is_a_list():
+	neighborhood = rec.choose_neighbors(5)
+	assert isinstance(neighborhood, list)
 
-def test_that_ratingDictionary_length_matches_number_of_movies():
-	assert len(returnRatingDictionary()) == len(returnMovieData())
-
-def test_that_ratingDictionary_item_length_matches_userList_length():
-	assert len(returnRatingDictionary()[1]) == len(returnUserList())
-
-def test_that_userList_is_a_list():
-	assert isinstance(returnUserList(), list)
-
-def test_that_userList_items_are_length_5():
-	assert len(returnUserList()[0]) == 5
-
-def test_that_ratingData_is_a_list():
-	assert isinstance(returnRatingData(), list)
-
-def test_that_ratingData_items_have_4_columns():
-	assert len(returnRatingData()[0]) == 4
-
-def test_that_data_in_ratingDictionary_is_correct():
-	user = int(returnRatingData()[10][0])
-	movie = int(returnRatingData()[10][1])
-	rating = int(returnRatingData()[10][2])
-	assert ratingDictionary[movie][user-1] == rating
-
-def test_that_averageRating_returns_a_float():
-	testVector = ratingDictionary[10][0:]
-	assert isinstance(averageRating(testVector), float)
-
-def test_that_rating_DataFrame_has_correct_dimensions():
-	dimensions = ratingDataFrame().shape
-	assert dimensions == (1682, 943)
+def test_that_get_user_ratings_returns_proper_list_of_ratings():
+	user_ratings = IIDH.get_user_ratings(300)
+	assert isinstance(user_ratings, list)
