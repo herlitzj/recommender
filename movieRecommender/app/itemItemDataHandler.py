@@ -9,6 +9,11 @@ def database_query(query):
 	cursor.execute(query)
 	return cursor.fetchall()
 
+def database_write(query):
+	cursor = connection.cursor()
+	cursor.execute(query)
+	connection.commit()
+
 def get_user_ratings(user_id):
 	user_ratings = database_query("SELECT movie, rating FROM ratings WHERE user={0}".format(user_id))
 	return user_ratings
@@ -46,3 +51,22 @@ def cosine_distance_matrix():
 	return cosine
 
 distance_matrix = cosine_distance_matrix()
+
+def choose_neighbors(target_movie, user):
+        all_neighbors = []
+        user_rated_movies = list(sum(database_query("SELECT movie FROM ratings WHERE user={0}".format(user)), ()))
+        user_rated_ratings = list(sum(database_query("SELECT rating FROM ratings WHERE user={0}".format(user)), ()))
+        for i in range(len(user_rated_movies)):
+                all_neighbors.append([distance_matrix[user_rated_movies[i]-1][target_movie-1], user_rated_ratings[i]])
+        return all_neighbors
+
+
+def predict_rating(target_movie, user):
+        rating_list = choose_neighbors(target_movie, user)
+        rating_list.sort(key=lambda x: x[0], reverse=True)
+        similarity_sum = 0.0
+        rating_sum = 0.0
+        for rating in rating_list[:20]:
+                similarity_sum = similarity_sum + rating[0]
+                rating_sum = rating_sum + (rating[0] * rating[1])
+        return rating_sum / similarity_sum
