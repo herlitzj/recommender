@@ -1,4 +1,5 @@
 import csv
+import functools
 import statistics
 import math
 import time
@@ -37,6 +38,7 @@ for rating in ratingData:
 	ratingDictionary[int(rating[0])][int(rating[1])-1] = int(rating[2])
 
 
+@functools.lru_cache(maxsize=128)
 def averageRating(vectorToAverage):
 	counter = 0
 	total = 0
@@ -48,7 +50,8 @@ def averageRating(vectorToAverage):
 
 def normalizeVector(vectorToNormalize):
 	normVector = vectorToNormalize
-	average = averageRating(normVector)
+	normTuple = tuple(normVector)
+	average = averageRating(normTuple)
 	for i in range(0, len(normVector)):
 		if normVector[i] == '':
 			normVector[i] = 0
@@ -79,12 +82,14 @@ def findNeighbors(inputUser):
 	neighbors = []
 	for user in userList:
 		if int(user[0]) != targetUser:
-			neighbors.append([int(user[0]), cosineSimilarity(targetUser, int(user[0])), averageRating(ratingDictionary[int(user[0])][0:])])
+			neighbors.append([int(user[0]), cosineSimilarity(targetUser, int(user[0])), averageRating(tuple(ratingDictionary[int(user[0])][0:]))])
 	return sorted(neighbors, key=lambda x: x[1], reverse=True)[0:50]
 
 
 def prediction(user, movie):
-	userAverageRating = averageRating(ratingDictionary[int(user)][0:])
+	ratingTuple = ratingDictionary[int(user)][0:]
+	ratingTuple = tuple(ratingTuple)
+	userAverageRating = averageRating(ratingTuple)
 	neighborhood = findNeighbors(user)
 	sumOfRatings = 0.0
 	sumOfWeights = 0.0
@@ -120,7 +125,7 @@ def newUserVector():
 
 def topFive(user):
 	topMovies = []
-	movies = movieData[170:200]
+	movies = movieData[170:175]
 	for movie in movies:
 		topMovies.append([movie[0], movie[1], prediction(user, int(movie[0]))])
 	return sorted(topMovies, key=lambda x: x[2], reverse=True)[0:5]

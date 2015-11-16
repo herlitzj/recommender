@@ -56,12 +56,12 @@ def main_menu(user_id):
 
 def list_rated_movies(user_id):
 	print
-        existing_ratings = IIDH.database_query("SELECT movie, rating FROM ratings WHERE user = {0}".format(user_id))
-        print("Your existing ratings are: ")
-        for rating in existing_ratings:
-                title = IIDH.database_query("SELECT title FROM movies where id = {0}".format(rating[0]))[0][0]
-                print int(rating[0]), title, rating[1], "/5"
-        user_choice = raw_input("Would you like to edit an existing rating? ")
+	existing_ratings = IIDH.database_query("SELECT movie, rating FROM ratings WHERE user = {0}".format(user_id))
+	print("Your existing ratings are: ")
+	for rating in existing_ratings:
+		title = IIDH.database_query("SELECT title FROM movies where id = {0}".format(rating[0]))[0][0]
+		print int(rating[0]), title, rating[1], "/5"
+	user_choice = raw_input("Would you like to edit an existing rating? ")
 	if user_choice == "yes":
 		edit_existing_movie(user_id)
 	else:
